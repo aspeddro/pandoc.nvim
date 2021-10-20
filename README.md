@@ -1,6 +1,6 @@
 # pandoc.nvim
 
-A Neovim plugin for [`pandoc`](https://pandoc.org)
+A Neovim plugin for [pandoc](https://pandoc.org)
 
 ## Requirements
 
@@ -29,27 +29,24 @@ require'pandoc'.setup{
 }
 ```
 
-- `default` `table`
-  - `output` `string`: file name template with extension
-  - `args` `table`: table with arguments. Each argument of flag is a table. Argument with values, should be a table with size two `{ 'ARGUMENT_NAME', 'VALUE' }`.
-- `models` `table`: optional. A named table, where each table is a model
-  - Example:
-    ```lua
-    models = {
-      paper = {
-        {'--biblatex'}
-        {'--toc'}
-      },
-      -- Beamer slide show
-      beamer = {
-        {'-t', 'beamer'}
-      }
+- `default` (table)
+  - `output` (string): file name template with extension
+  - `args` (table): table with arguments. Each argument or flag is a table. Argument with values, should be a table with size two `{ '--argument', 'value' }`.
+- `models` (table): optional. A named table, where each table is a model
+  ```lua
+  models = {
+    paper = {
+      {'--biblatex'}
+      {'--toc'}
+    },
+    -- Beamer slide show
+    beamer = {
+      {'-t', 'beamer'}
     }
-    ```
+  }
+  ```
 
 ## Usage
-
-`Pandoc <argument=value> <flag>`
 
 Basic command, use default options:
 
@@ -57,12 +54,10 @@ Basic command, use default options:
 Pandoc
 ```
 
+Enable `--toc` table-of-contents and `--top-level-division`
 ```
--- toc: enable table of contents flag
 Pandoc toc citeproc top-level-division=section
 ```
-
-use `output` to write
 
 ```
 Pandoc output=notes.pdf
