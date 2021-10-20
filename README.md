@@ -48,6 +48,8 @@ require'pandoc'.setup{
 
 ## Usage
 
+> The input file is the current buffer
+
 Basic command, use default options:
 
 ```
@@ -56,13 +58,10 @@ Pandoc
 
 Enable `--toc` table-of-contents and `--top-level-division`
 ```
-Pandoc toc citeproc top-level-division=section
+Pandoc toc citeproc top-level-division=section output=example_pandoc.pdf
 ```
 
-```
-Pandoc output=notes.pdf
-```
-
+Use a model:
 ```
 PandocModel NameModel
 ```
