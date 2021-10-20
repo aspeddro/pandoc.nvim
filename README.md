@@ -41,7 +41,7 @@ require'pandoc'.setup{
     },
     -- Beamer slide show
     beamer = {
-      {'-t', 'beamer'}
+      {'--to', 'beamer'}
     }
   }
   ```
