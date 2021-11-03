@@ -69,29 +69,45 @@ local types = {
 }
 
 local default_config = {
-  -- Pandoc default optios
+  -- Pandoc default options
   default = {
-    -- Output template. Create a pdf
+    -- Output template
+    -- @type: string
     output = '%s.pdf',
     -- List of arguments
+    -- @type: table
     args = {
       {'--standalone'}
     }
   },
-  -- WIP. Table Of Contents Menu
+  -- Table Of Content (WIP: unstable)
   toc = {
     -- Enable TOC
+    -- @type: boolean
     enable = true,
     -- Width of TOC
+    -- @type: number
     width = 35,
     -- Side of TOC
+    -- 'left', 'right', 'top' or 'bottom'
+    -- @type: string
     side = 'right',
     -- Keybinding to close TOC
+    -- @type: string
     close = 'q',
-    -- Update TOC Content when Buffer Enter
+    -- Evetns to update TOC content
+    -- @type: table of string
     update_events = {'BufEnter'},
   },
+  equation = {
+    -- Border style.
+    -- 'none', 'single', 'double' or 'rounded'
+    -- @type: string
+    border = 'single'
+  },
   -- Filetypes to enable TOC
+  -- 'markdown', 'pandoc' and 'rmd' (RMarkdown)
+  -- @type: table of string
   filetypes = {'markdown', 'pandoc', 'rmd'}
 }
 

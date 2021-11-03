@@ -11,6 +11,8 @@ A Neovim plugin for [pandoc](https://pandoc.org)
 
 ## Installation
 
+#### [packer.nvim](https://github.com/wbthomason/packer.nvim)
+
 ```lua
 use {
   'aspeddro/pandoc.nvim',
@@ -21,36 +23,59 @@ use {
 }
 ```
 
-## Configuration
+## Setup
 
 ```lua
-local opts = {
-  -- Pandoc default optios
+require'pandoc.setup()
+```
+
+## Configuration (optional)
+
+Following are the default config for the `setup()`. If you want to override, just modify the option that you want then it will be merged with the default config.
+
+```lua
+{
+  -- Pandoc default options
   default = {
-    -- Output template. Create a pdf.
+    -- Output template
+    -- @type: string
     output = '%s.pdf',
     -- List of arguments
+    -- @type: table
     args = {
       {'--standalone'}
     }
   },
-  -- WIP. Table Of Contents Menu
+  -- Table Of Content (WIP: unstable)
   toc = {
     -- Enable TOC
+    -- @type: boolean
     enable = true,
     -- Width of TOC
+    -- @type: number
     width = 35,
     -- Side of TOC
+    -- 'left', 'right', 'top' or 'bottom'
+    -- @type: string
     side = 'right',
     -- Keybinding to close TOC
+    -- @type: string
     close = 'q',
-    -- Update TOC Content when Buffer Enter
+    -- Evetns to update TOC content
+    -- @type: table of string
     update_events = {'BufEnter'},
   },
+  equation = {
+    -- Border style.
+    -- 'none', 'single', 'double' or 'rounded'
+    -- @type: string
+    border = 'single'
+  },
   -- Filetypes to enable TOC
+  -- 'markdown', 'pandoc' and 'rmd' (RMarkdown)
+  -- @type: table of string
   filetypes = {'markdown', 'pandoc', 'rmd'}
 }
-require'pandoc'.setup(opts)
 ```
 
 ### Add Models
@@ -65,11 +90,15 @@ require'pandoc'.setup{
       -- Enable biblatex
       {'--biblatex'}
       -- Produce Table of Content
-      {'--toc'}
+      {'--toc'},
+      -- Use crossref filter
+      {'--filter', 'pandoc-crossref'}
     },
     -- Beamer slide show
     beamer = {
-      {'--to', 'beamer'}
+      {'--to', 'beamer'},
+      {'--filter', 'pandoc-crossref'},
+      {'--output', '%s_slide.pdf'}
     }
   }
 }
@@ -119,6 +148,11 @@ Pandoc toc citeproc top-level-division=section output=example_pandoc.pdf
 Use a model:
 ```
 PandocModel
+```
+
+Toggle TOC:
+```
+PandocTOC
 ```
 
 ### Examples
