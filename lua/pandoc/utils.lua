@@ -1,5 +1,6 @@
 local Job = require'plenary.job'
 local config = require'pandoc.config'
+
 local utils = {}
 
 local function convert(value, target)
@@ -24,7 +25,7 @@ end
 
 utils.output_file = function(str)
  local r, _ = string.gsub(str, '.[^.]+$', '')
- return config.options.default.output:format(r)
+ return config.get().default.output:format(r)
 end
 
 utils.has_argument = function(tbl, name)
@@ -117,10 +118,36 @@ utils.job = function(tbl)
     on_exit = function(_, return_val)
       if return_val == 0 then
         print("pandoc: Done")
+      else
+        print("pandoc: Failed")
       end
     end
   }:start()
 
+end
+
+utils.on_keypress = function(key)
+  local binding = config.get().mapping[key:gsub("%[", "<"):gsub("%]", ">")]
+
+  assert(type(binding) == 'function', 'Mapping bind should be a function')
+
+  binding()
+end
+
+local keymap_callback = function(key)
+  return string.format('<cmd>lua require"pandoc.utils".on_keypress("%s")<CR>', key:gsub("<", "["):gsub(">", "]"))
+end
+
+utils.register_key = function(mapping)
+  local opts = { noremap = true, silent = true, nowait = true }
+	for key, _ in pairs(mapping) do
+    vim.api.nvim_set_keymap(
+      'n',
+      key,
+      keymap_callback(key),
+      opts
+    )
+	end
 end
 
 return utils

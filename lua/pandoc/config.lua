@@ -1,4 +1,4 @@
-local config = {}
+local M = {}
 
 local types = {
   ['--from'] = 'string',
@@ -11,7 +11,7 @@ local types = {
   ['--metadata-file'] = 'string',
   ['--defaults'] = 'string',
   ['--file-scope'] = 'flag',
-  ['--standlone'] = 'flag',
+  ['--standalone'] = 'flag',
   ['--template'] = 'string',
   -- NOTE: variable is not supported
   -- ['--variable'] = 'string',
@@ -69,28 +69,52 @@ local types = {
 }
 
 local default_config = {
+  -- Pandoc default optios
   default = {
+    -- Output template. Create a pdf
     output = '%s.pdf',
+    -- List of arguments
     args = {
-      {'--standlone'}
+      {'--standalone'}
     }
-  }
+  },
+  -- WIP. Table Of Contents Menu
+  toc = {
+    -- Enable TOC
+    enable = true,
+    -- Width of TOC
+    width = 35,
+    -- Side of TOC
+    side = 'right',
+    -- Keybinding to close TOC
+    close = 'q',
+    -- Update TOC Content when Buffer Enter
+    update_events = {'BufEnter'},
+    -- close_events = {'BufLeave'},
+    -- auto_close_events = {'BufLeave'}
+  },
+  -- Filetypes to enable TOC
+  filetypes = {'markdown', 'pandoc', 'rmd'}
 }
 
-config.options = default_config
+M.options = default_config
 
-config.get = function(option)
-  return default_config[option]
+M.get = function()
+  return default_config
 end
 
-config.merge = function(option)
+M.set = function(option)
+  default_config = option
+end
+
+M.merge = function(option)
   return vim.tbl_deep_extend('force', {}, default_config, option or {})
 end
 
-config.types = types
+M.types = types
 
-config.get_type = function(option)
+M.get_type = function(option)
   return types[option]
 end
 
-return config
+return M
