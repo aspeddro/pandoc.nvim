@@ -24,32 +24,33 @@ use {
 ## Configuration
 
 ```lua
--- Pandoc default optios
-default = {
-  -- Output template. Create a pdf.
-  output = '%s.pdf',
-  -- List of arguments
-  args = {
-    {'--standalone'}
-  }
-},
--- WIP. Table Of Contents Menu
-toc = {
-  -- Enable TOC
-  enable = true,
-  -- Width of TOC
-  width = 35,
-  -- Side of TOC
-  side = 'right',
-  -- Keybinding to close TOC
-  close = 'q',
-  -- Update TOC Content when Buffer Enter
-  update_events = {'BufEnter'},
-  -- close_events = {'BufLeave'},
-  -- auto_close_events = {'BufLeave'}
-},
--- Filetypes to enable TOC
-filetypes = {'markdown', 'pandoc', 'rmd'}
+local opts = {
+  -- Pandoc default optios
+  default = {
+    -- Output template. Create a pdf.
+    output = '%s.pdf',
+    -- List of arguments
+    args = {
+      {'--standalone'}
+    }
+  },
+  -- WIP. Table Of Contents Menu
+  toc = {
+    -- Enable TOC
+    enable = true,
+    -- Width of TOC
+    width = 35,
+    -- Side of TOC
+    side = 'right',
+    -- Keybinding to close TOC
+    close = 'q',
+    -- Update TOC Content when Buffer Enter
+    update_events = {'BufEnter'},
+  },
+  -- Filetypes to enable TOC
+  filetypes = {'markdown', 'pandoc', 'rmd'}
+}
+require'pandoc'.setup(opts)
 ```
 
 ### Add Models
@@ -100,7 +101,6 @@ pandoc.setup{
 
 ![image](https://user-images.githubusercontent.com/16160544/140002079-244d1727-488d-4b7c-aab8-1232e85e08c9.png)
 
-
 ## Usage
 
 > Input file is the current buffer. Use `Tab` key for completion
@@ -148,7 +148,7 @@ PandocModel
 12. From markdown to PDF:
   - `Pandoc pdf-engine=xelatex output=example12.pdf`
 13. PDF with numbered sections and a custom LaTeX template:
-  - `pandoc number-sections template=template.tex pdf-engine=xelatex toc output=example13.pdf`
+  - `Pandoc number-sections template=template.tex pdf-engine=xelatex toc output=example13.pdf`
 
 ## Lua API
 

@@ -90,8 +90,6 @@ local default_config = {
     close = 'q',
     -- Update TOC Content when Buffer Enter
     update_events = {'BufEnter'},
-    -- close_events = {'BufLeave'},
-    -- auto_close_events = {'BufLeave'}
   },
   -- Filetypes to enable TOC
   filetypes = {'markdown', 'pandoc', 'rmd'}
