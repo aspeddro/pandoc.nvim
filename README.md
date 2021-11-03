@@ -26,7 +26,7 @@ use {
 ## Setup
 
 ```lua
-require'pandoc.setup()
+require'pandoc'.setup()
 ```
 
 ## Configuration (optional)
