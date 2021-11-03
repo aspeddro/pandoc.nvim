@@ -98,6 +98,9 @@ pandoc.setup{
 
 - LaTeX equation preview with [nabla.nvim](https://github.com/jbyuki/nabla.nvim/)
 
+![image](https://user-images.githubusercontent.com/16160544/140002079-244d1727-488d-4b7c-aab8-1232e85e08c9.png)
+
+
 ## Usage
 
 > Input file is the current buffer. Use `Tab` key for completion
