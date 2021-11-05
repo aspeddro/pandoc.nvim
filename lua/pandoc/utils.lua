@@ -23,7 +23,7 @@ local function convert(value, target)
 
 end
 
-utils.output_file = function(str)
+utils.output_file = function(name, template)
  local r, _ = string.gsub(str, '.[^.]+$', '')
  return config.get().default.output:format(r)
 end
@@ -35,6 +35,14 @@ utils.has_argument = function(tbl, name)
     end
   end
   return false
+end
+
+utils.get_argument = function(tbl, name)
+  for _, value in ipairs(tbl) do
+    if value[1] == name then
+      return value[2]
+    end
+  end
 end
 
 utils.add_argument = function(tbl, name)
