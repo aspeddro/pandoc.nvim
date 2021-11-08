@@ -2,6 +2,7 @@ local config = require'pandoc.config'
 local utils = require'pandoc.utils'
 local toc = require'pandoc.toc'
 local equation = require'pandoc.equation'
+local highlight = require'pandoc.highlight'
 
 local M = {}
 
@@ -29,6 +30,7 @@ local function vim_commands()
     command! -bang -nargs=* -complete=customlist,v:lua.require'pandoc'._completion_plugin.pandoc Pandoc lua require'pandoc'.run(<q-args>, <q-bang>)
     command! -nargs=? -complete=customlist,v:lua.require'pandoc'._completion_plugin.models PandocModel lua require'pandoc'.run_model(<f-args>)
     command! PandoTOC lua require'pandoc'.toc.toggle()
+    command! PandocHighlight lua require'pandoc'.highlight.toggle()
   ]]
 end
 
@@ -42,7 +44,13 @@ end
 M.setup = function(user_opts)
   local opts = config.merge(user_opts)
   config.set(opts)
+
   utils.register_key(opts.mapping)
+
+  if opts.highlight.enable then
+    highlight.enable()
+  end
+
   vim_commands()
   autocommands()
 end
@@ -54,8 +62,9 @@ M.run_model = function(name)
   local bufname = vim.api.nvim_buf_get_name(0)
 
   if not utils.has_argument(model, '--output') then
-    utils.add_argument(model, {'--output', utils.output_file(bufname)})
+    utils.add_argument(model, {'--output', utils.output_file(bufname, model)})
   end
+
 
   utils.add_argument(model, bufname)
 
@@ -83,5 +92,6 @@ end
 
 M.toc = toc
 M.equation = equation
+M.highlight = highlight
 
 return M

@@ -105,6 +105,18 @@ local default_config = {
     -- @type: string
     border = 'single'
   },
+  -- Syntax Highlight (WIP)
+  highlight = {
+    -- Enable syntax highlight
+    enable = true,
+    groups = {
+      header = {
+        delimiter = 'Keyword',
+        fields = 'Constant'
+      }
+    }
+
+  },
   -- Filetypes to enable TOC
   -- 'markdown', 'pandoc' and 'rmd' (RMarkdown)
   -- @type: table of string
