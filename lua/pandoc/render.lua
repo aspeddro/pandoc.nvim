@@ -32,7 +32,7 @@ M.basic = function(opts)
     })
   end
 
-  local parse = utils.parser_vim_command(opts)
+  local parse = utils.parse_vim_command(opts)
 
   if not utils.has_argument(parse, '--output') then
     utils.add_argument(parse, {
