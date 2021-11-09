@@ -32,18 +32,18 @@ M.basic = function(opts)
     })
   end
 
-  local parsed = utils.parser_vim_command(opts)
+  local parse = utils.parser_vim_command(opts)
 
-  if not utils.has_argument(parsed, '--output') then
-    utils.add_argument(parsed, {
+  if not utils.has_argument(parse, '--output') then
+    utils.add_argument(parse, {
       '--output',
       utils.output_file(bufname),
     })
   end
 
-  utils.add_argument(parsed, bufname)
+  utils.add_argument(parse, bufname)
 
-  utils.job(parsed)
+  utils.job(parse)
 end
 
 M.start = function(opts)

@@ -35,60 +35,42 @@ M.add_argument = function(tbl, name)
   return table.insert(tbl, name)
 end
 
--- Remove dash from argument (string)
-local function friendly_argument(s)
-  return string.gsub(s, '^-+', '')
-end
-
 local function is_valid_argument(argument)
-  local type_info = config.get_type(argument[1])
-  local argument_name = friendly_argument(argument[1])
+  local lhs, rhs = unpack(argument)
+  local type_ = config.types['--' .. lhs]
+  local argument_name = lhs:gsub('^%-+', '')
 
   -- Assert than argument exist
-  assert(type_info ~= nil, argument[1] .. ' is a invalid argument')
+  assert(type_, lhs .. ' is a invalid argument')
 
-  -- Assert than if is not a flag should be a value ie ~= nil
-  -- assert(type_info ~= 'flag' and argument[2] ~= nil, argument_name .. ' is empty')
-
-  -- Assert than type is valid
-  if type_info == 'flag' then
-    assert(argument[2] == nil, argument_name .. ' should be a flag')
+  if type_ == 'flag' then
+    assert(rhs == nil, argument_name .. ' must be a flag')
   end
-  if type_info == 'string' then
-    assert(type(argument[2]) == 'string', argument_name .. ' should be a string')
-    assert(string.len(argument[2]) > 0, argument_name .. ' is empty')
+  if type_ == 'string' then
+    assert(type(rhs) == 'string', argument_name .. ' must be a string')
+    assert(string.len(rhs) > 0, argument_name .. ' is empty')
   end
 
-  if type(type_info) == 'table' then
-    assert(vim.tbl_contains(type_info, argument[2]), argument_name .. ' should be ' .. table.concat(type_info, ', '))
+  if type_ == 'number' then
+    assert(type(tonumber(rhs)) == 'number', argument_name .. ' must be a number')
+  end
+
+  if type(type_) == 'table' then
+    assert(vim.tbl_contains(type_, rhs), argument_name .. ' must be ' .. table.concat(type_, ', '))
   end
   return true
 end
 
-M.validate = function(tbl)
-  for _, argument in pairs(tbl) do
-    is_valid_argument(argument)
-  end
-end
-
-local function parse_arg(s)
-  local split = vim.split(s, '=', true)
-
-  local pandoc_arg = vim.tbl_filter(function(arg)
-    return split[1] == string.gsub(arg, '^-+', '')
-  end, vim.tbl_keys(
-    config.types
-  ))[1]
-
-  assert(pandoc_arg ~= nil, split[1] .. ' is not a valid argument')
-
-  local result = #split == 2 and { pandoc_arg, split[2] } or { pandoc_arg }
-
-  return result
-end
-
-M.parser_vim_command = function(s)
-  return vim.tbl_map(parse_arg, vim.split(string.gsub(s, '"', ''), ' ', true))
+M.parse_vim_command = function(arguments)
+  return vim.tbl_map(function(argument)
+    local lhs, rhs = unpack(vim.split(argument, '=', true))
+    is_valid_argument({ lhs, rhs })
+    return { '--' .. lhs, rhs }
+  end, vim.split(
+    arguments,
+    ' ',
+    true
+  ))
 end
 
 M.job = function(tbl)
@@ -122,7 +104,7 @@ end
 M.on_keypress = function(key)
   local binding = config.get().mapping[key:gsub('%[', '<'):gsub('%]', '>')]
 
-  assert(type(binding) == 'function', 'Mapping bind should be a function')
+  assert(type(binding) == 'function', 'Mapping bind must be a function')
 
   binding()
 end
