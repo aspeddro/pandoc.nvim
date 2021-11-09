@@ -1,6 +1,6 @@
 local config = require('pandoc.config')
 local utils = require('pandoc.utils')
-
+local process = require('pandoc.process')
 local M = {}
 
 M.model = function(name)
@@ -32,7 +32,7 @@ M.basic = function(opts)
     })
   end
 
-  local parse = utils.parser_vim_command(opts)
+  local parse = utils.parse_vim_command(opts)
 
   if not utils.has_argument(parse, '--output') then
     utils.add_argument(parse, {
@@ -43,7 +43,10 @@ M.basic = function(opts)
 
   utils.add_argument(parse, bufname)
 
-  utils.job(parse)
+  -- utils.job(parse)
+  process.spawn({
+    args = vim.tbl_flatten(parse)
+  })
 end
 
 M.start = function(opts)
