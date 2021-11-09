@@ -50,7 +50,7 @@ M.start = function(opts)
   utils.job({
     opts.input,
     opts.args,
-    opts.output,
+    { '--output', opts.output },
   })
 end
 
