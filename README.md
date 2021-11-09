@@ -35,16 +35,20 @@ Following are the default config for the `setup()`. If you want to override, jus
 
 ```lua
 {
+  -- Enable vim commands
+  -- :Pandoc, :PandocTOC, :PandocModel
+  -- @type: boolean
+  commands = true,
   -- Pandoc default options
   default = {
-    -- Output template
+    -- Output file name with extension
     -- @type: string
     output = '%s.pdf',
     -- List of arguments
     -- @type: table
     args = {
-      {'--standalone'}
-    }
+      { '--standalone' },
+    },
   },
   -- Table Of Content (WIP: unstable)
   toc = {
@@ -61,44 +65,48 @@ Following are the default config for the `setup()`. If you want to override, jus
     -- Keybinding to close TOC
     -- @type: string
     close = 'q',
-    -- Evetns to update TOC content
+    -- Events to update TOC content
     -- @type: table of string
-    update_events = {'BufEnter'},
+    update_events = { 'BufEnter' },
+    -- Filetypes to enable TOC
+    -- 'markdown', 'pandoc' and 'rmd' (RMarkdown)
+    -- @type: table of string
+    filetypes = { 'markdown', 'pandoc', 'rmd' }
   },
   equation = {
     -- Border style.
     -- 'none', 'single', 'double' or 'rounded'
     -- @type: string
-    border = 'single'
-  },
-  -- Filetypes to enable TOC
-  -- 'markdown', 'pandoc' and 'rmd' (RMarkdown)
-  -- @type: table of string
-  filetypes = {'markdown', 'pandoc', 'rmd'}
+    border = 'single',
+  }
 }
 ```
 
 ### Add Models
 
-A named table, where each table is a model
+A named table, where each table is a model. If `output` option is not provide then the `default.output` will be used.
 
 ```lua
 require'pandoc'.setup{
   models = {
     -- Paper Model
     paper = {
-      -- Enable biblatex
-      {'--biblatex'}
-      -- Produce Table of Content
-      {'--toc'},
-      -- Use crossref filter
-      {'--filter', 'pandoc-crossref'}
+      args = {
+        -- Enable biblatex
+        {'--biblatex'}
+        -- Print Table of Content
+        {'--toc'},
+        -- Use crossref filter
+        {'--filter', 'pandoc-crossref'}
+      }
     },
     -- Beamer slide show
     beamer = {
-      {'--to', 'beamer'},
-      {'--filter', 'pandoc-crossref'},
-      {'--output', '%s_slide.pdf'}
+      output = '%s_beamer.pdf',
+      args = {
+        {'--to', 'beamer'},
+        {'--filter', 'pandoc-crossref'}
+      }
     }
   }
 }
@@ -106,12 +114,28 @@ require'pandoc'.setup{
 
 ### Keymappings
 
+Create your keymappings
+
 ```lua
 local pandoc = require'pandoc'
+
 pandoc.setup{
   mapping = {
     ['<leader>pr'] = function()
-      pandoc.run()
+      pandoc.render.basic()
+    end,
+    ['<leader>ps'] = function()
+      -- Make your pandoc command
+      pandoc.render.start{
+        input = 'basic.md',
+        args = {
+          {'--standalone'},
+          {'--toc'},
+          {'--filter', 'pandoc-crossref'},
+          {'--pdf-engine', 'xelatex'}
+        },
+        output = 'basic.pdf'
+      }
     end,
     ['<leader>ep'] = function()
       -- requires nabla.nvim
@@ -130,9 +154,13 @@ pandoc.setup{
 
 ![image](https://user-images.githubusercontent.com/16160544/140002079-244d1727-488d-4b7c-aab8-1232e85e08c9.png)
 
+> `nabla.nvim` does not support all LaTeX notations
+
 ## Usage
 
 > Input file is the current buffer. Use `Tab` key for completion
+
+`pandoc.nvim` provide three commands: `:Pandoc`, `:PandocModel` and `:PandocTOC`
 
 Basic command, use default options:
 
@@ -140,14 +168,14 @@ Basic command, use default options:
 Pandoc
 ```
 
-Enable `--toc` table-of-contents and `--top-level-division`
+Enable table of contents (`--toc` flag) and `--top-level-division` argument
 ```
 Pandoc toc citeproc top-level-division=section output=example_pandoc.pdf
 ```
 
 Use a model:
 ```
-PandocModel
+PandocModel ModelName
 ```
 
 Toggle TOC:
@@ -186,11 +214,10 @@ PandocTOC
 
 ## Lua API
 
-- `pandoc.setup`
-- `pandoc.run`
-- `pandoc.run_model`
+- `pandoc.render`
 - `pandoc.toc`
 - `pandoc.equation`
+- `pandoc.config`
 
 ## Limitations
 

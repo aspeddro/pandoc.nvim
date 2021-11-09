@@ -1,4 +1,4 @@
-local config = require("pandoc.config")
+local config = require('pandoc.config')
 
 local M = {}
 
@@ -11,11 +11,11 @@ local State = {
 }
 
 local buf_options = {
-  { "swapfile", false },
-  { "buftype", "nofile" },
-  { "modifiable", false },
-  { "filetype", "markdown" },
-  { "bufhidden", "hide" },
+  { 'swapfile', false },
+  { 'buftype', 'nofile' },
+  { 'modifiable', false },
+  { 'filetype', 'markdown' },
+  { 'bufhidden', 'hide' },
 }
 
 local is_open = function()
@@ -49,7 +49,7 @@ M.handler_new_buffer = function()
 
   local new_buffer = vim.api.nvim_get_current_buf()
 
-  if not vim.tbl_contains(config.get().filetypes, vim.bo.filetype) then
+  if not vim.tbl_contains(config.get().toc.filetypes, vim.bo.filetype) then
     -- M.close()
     return
   end
@@ -73,7 +73,7 @@ M.handler_keypress = function()
     return vim.api.nvim_win_get_buf(win) == State.source_bufnr
   end, vim.api.nvim_list_wins())
 
-  assert(#windows == 1, "Window of source not found")
+  assert(#windows == 1, 'Window of source not found')
 
   local winr = windows[1]
   local row = State.content[cursor_line].number
@@ -83,7 +83,7 @@ M.handler_keypress = function()
 end
 
 M.handler_update = function()
-  if not vim.tbl_contains(config.get().filetypes, vim.bo.filetype) then
+  if not vim.tbl_contains(config.get().toc.filetypes, vim.bo.filetype) then
     return
   end
 
@@ -92,7 +92,7 @@ M.handler_update = function()
   local items = {}
 
   for number, line in ipairs(lines) do
-    if line:match("^#+%s+") then
+    if line:match('^#+%s+') then
       table.insert(items, { number = number, content = line })
     end
   end
@@ -100,24 +100,24 @@ M.handler_update = function()
   State.content = items
 
   local content = vim.tbl_map(function(n)
-    local start, _ = n.content:find("%s+{#sec:[%w_-]+}")
+    local start, _ = n.content:find('%s+{#sec:[%w_-]+}')
     return n.content:sub(1, start)
   end, items)
 
-  vim.api.nvim_buf_set_option(State.bufnr, "modifiable", true)
+  vim.api.nvim_buf_set_option(State.bufnr, 'modifiable', true)
   vim.api.nvim_buf_set_lines(State.bufnr, 0, -1, true, content)
-  vim.api.nvim_buf_set_option(State.bufnr, "modifiable", false)
+  vim.api.nvim_buf_set_option(State.bufnr, 'modifiable', false)
 end
 
 local create_buffer = function()
   for _, bn in ipairs(vim.api.nvim_list_bufs()) do
-    if vim.fn.bufname(bn) == "PandocToc" then
+    if vim.fn.bufname(bn) == 'PandocToc' then
       pcall(vim.api.nvim_buf_delete, bn, { force = true })
     end
   end
 
   local bufnr = vim.api.nvim_create_buf(false, false)
-  vim.api.nvim_buf_set_name(bufnr, "PandocToc")
+  vim.api.nvim_buf_set_name(bufnr, 'PandocToc')
 
   for _, option in ipairs(buf_options) do
     vim.api.nvim_buf_set_option(bufnr, option[1], option[2])
@@ -127,36 +127,36 @@ local create_buffer = function()
 
   State.bufnr = bufnr
 
-  vim.api.nvim_command("vsp")
+  vim.api.nvim_command('vsp')
 
   local move_tbl = {
-    left = "H",
-    right = "L",
-    bottom = "J",
-    top = "K",
+    left = 'H',
+    right = 'L',
+    bottom = 'J',
+    top = 'K',
   }
 
-  vim.api.nvim_command("wincmd " .. move_tbl[config.get().toc.side or "right"])
+  vim.api.nvim_command('wincmd ' .. move_tbl[config.get().toc.side or 'right'])
 
-  vim.api.nvim_command("vertical resize " .. toc_width)
+  vim.api.nvim_command('vertical resize ' .. toc_width)
 
   local winr = vim.api.nvim_get_current_win()
 
   local win_options = {
-    { "relativenumber", false },
-    { "number", false },
-    { "list", false },
-    { "winfixwidth", true },
-    { "signcolumn", "yes" },
-    { "foldcolumn", "0" },
-    { "wrap", false },
+    { 'relativenumber', false },
+    { 'number', false },
+    { 'list', false },
+    { 'winfixwidth', true },
+    { 'signcolumn', 'yes' },
+    { 'foldcolumn', '0' },
+    { 'wrap', false },
   }
 
   for _, option in ipairs(win_options) do
     vim.api.nvim_win_set_option(winr, option[1], option[2])
   end
 
-  vim.api.nvim_command("buffer " .. bufnr)
+  vim.api.nvim_command('buffer ' .. bufnr)
 end
 
 M.toggle = function()
@@ -167,15 +167,24 @@ M.toggle = function()
   end
 end
 
+local function autocommands()
+  vim.cmd('augroup PandocToc')
+  vim.cmd('autocmd!')
+  vim.cmd(
+    'autocmd ' .. table.concat(config.get().toc.update_events, ',') .. ' * lua require"pandoc.toc".handler_new_buffer()'
+  )
+  vim.cmd('augroup END')
+end
+
 M.open = function()
   local opts = config.get()
 
   if not opts.toc.enable then
-    error("toc disable")
+    error('toc disable')
   end
 
-  if #opts.filetypes > 0 and not vim.tbl_contains(opts.filetypes, vim.bo.filetype) then
-    error("Not a valid filetype")
+  if #opts.toc.filetypes > 0 and not vim.tbl_contains(opts.toc.filetypes, vim.bo.filetype) then
+    error('Not a valid filetype')
   end
 
   if is_open() then
@@ -188,15 +197,17 @@ M.open = function()
 
   M.handler_update()
 
+  autocommands()
+
   vim.api.nvim_set_keymap(
-    "n",
-    "<CR>",
+    'n',
+    '<CR>',
     '<cmd>lua require"pandoc.toc".handler_keypress()<CR>',
     { noremap = true, silent = true, nowait = true }
   )
   vim.api.nvim_set_keymap(
-    "n",
-    config.get().toc.close or "q",
+    'n',
+    config.get().toc.close or 'q',
     '<cmd>lua require"pandoc.toc".close()<CR>',
     { noremap = true, silent = true, nowait = true }
   )
