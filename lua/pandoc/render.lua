@@ -1,60 +1,38 @@
 local config = require('pandoc.config')
 local utils = require('pandoc.utils')
 local process = require('pandoc.process')
+
 local M = {}
 
-M.model = function(name)
-  local model = config.get().models[name]
-  assert(model, name .. ' not found. Check your setup')
-
+M.init = function(opts)
   local bufname = vim.api.nvim_buf_get_name(0)
 
-  if not utils.has_argument(model, '--output') then
-    utils.add_argument(model, {
-      '--output',
-      utils.output_file(bufname, model.output),
-    })
-  end
+  local arguments = { bufname }
 
-  utils.add_argument(model, bufname)
+  local output = { '--output', utils.create_output(bufname) }
 
-  utils.job(model)
-end
-
-M.basic = function(opts)
-  local bufname = vim.api.nvim_buf_get_name(0)
-  -- use current buffer as input
   if not opts or string.len(opts) == 0 then
-    return utils.job({
-      bufname,
-      config.get().default.args,
-      { '--output', utils.output_file(bufname) },
-    })
+    utils.add_argument(arguments, config.get().default.args)
+    utils.add_argument(arguments, { output })
+
+    return process.spawn({ args = arguments })
   end
 
-  local parse = utils.parse_vim_command(opts)
+  local parsed = utils.parse_vim_command(opts)
 
-  if not utils.has_argument(parse, '--output') then
-    utils.add_argument(parse, {
-      '--output',
-      utils.output_file(bufname),
-    })
+  if not utils.has_argument(parsed, '--output') then
+    utils.add_argument(arguments, { output })
   end
 
-  utils.add_argument(parse, bufname)
+  utils.add_argument(arguments, parsed)
 
-  -- utils.job(parse)
-  process.spawn({
-    args = vim.tbl_flatten(parse)
-  })
+  process.spawn({ args = arguments })
 end
 
-M.start = function(opts)
-  utils.job({
-    opts.input,
-    opts.args,
-    { '--output', opts.output },
-  })
+M.build = function(opts)
+  local arguments = { opts.input, { '--output', opts.output } }
+  utils.add_argument(arguments, opts.args)
+  process.spawn({ args = arguments })
 end
 
 return M
