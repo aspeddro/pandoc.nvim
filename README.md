@@ -7,7 +7,6 @@ A Neovim plugin for [pandoc](https://pandoc.org)
 ## Requirements
 
 - `Neovim >= 0.5.0`
-- [`plenary.nvim`](https://github.com/nvim-lua/plenary.nvim)
 
 ## Installation
 
@@ -15,11 +14,7 @@ A Neovim plugin for [pandoc](https://pandoc.org)
 
 ```lua
 use {
-  'aspeddro/pandoc.nvim',
-  requires = {
-    'nvim-lua/plenary.nvim',
-    'jbyuki/nabla.nvim' -- Optional. See Extra Features
-  }
+  'aspeddro/pandoc.nvim'
 }
 ```
 
@@ -36,7 +31,7 @@ Following are the default config for the `setup()`. If you want to override, jus
 ```lua
 {
   -- Enable vim commands
-  -- :Pandoc, :PandocTOC, :PandocModel
+  -- :Pandoc, :PandocTOC
   -- @type: boolean
   commands = true,
   -- Pandoc default options
@@ -82,36 +77,6 @@ Following are the default config for the `setup()`. If you want to override, jus
 }
 ```
 
-### Add Models
-
-A named table, where each table is a model. If `output` option is not provide then the `default.output` will be used.
-
-```lua
-require'pandoc'.setup{
-  models = {
-    -- Paper Model
-    paper = {
-      args = {
-        -- Enable biblatex
-        {'--biblatex'}
-        -- Print Table of Content
-        {'--toc'},
-        -- Use crossref filter
-        {'--filter', 'pandoc-crossref'}
-      }
-    },
-    -- Beamer slide show
-    beamer = {
-      output = '%s_beamer.pdf',
-      args = {
-        {'--to', 'beamer'},
-        {'--filter', 'pandoc-crossref'}
-      }
-    }
-  }
-}
-```
-
 ### Keymappings
 
 Create your keymappings
@@ -122,19 +87,20 @@ local pandoc = require'pandoc'
 pandoc.setup{
   mapping = {
     ['<leader>pr'] = function()
-      pandoc.render.basic()
+      pandoc.render.init()
     end,
     ['<leader>ps'] = function()
       -- Make your pandoc command
-      pandoc.render.start{
-        input = 'basic.md',
+      local input = vim.api.nvim_get_buf_name(0)
+      pandoc.render.build{
+        input = input,
         args = {
           {'--standalone'},
           {'--toc'},
           {'--filter', 'pandoc-crossref'},
           {'--pdf-engine', 'xelatex'}
         },
-        output = 'basic.pdf'
+        output = 'pandoc.pdf'
       }
     end,
     ['<leader>ep'] = function()
@@ -154,7 +120,7 @@ pandoc.setup{
 
 ![image](https://user-images.githubusercontent.com/16160544/140002079-244d1727-488d-4b7c-aab8-1232e85e08c9.png)
 
-> `nabla.nvim` does not support all LaTeX notations
+`nabla.nvim` does not support all LaTeX notations
 
 ## Usage
 
@@ -169,13 +135,9 @@ Pandoc
 ```
 
 Enable table of contents (`--toc` flag) and `--top-level-division` argument
+
 ```
 Pandoc toc citeproc top-level-division=section output=example_pandoc.pdf
-```
-
-Use a model:
-```
-PandocModel ModelName
 ```
 
 Toggle TOC:

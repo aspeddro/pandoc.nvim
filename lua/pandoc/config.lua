@@ -67,12 +67,15 @@ local types = {
   ['--natbib'] = 'flag',
   ['--biblatex'] = 'flag',
 }
-
+-- NOTE: Update README and docs when change default options
 local default_config = {
   -- Enable vim commands
   -- :Pandoc, :PandocTOC, :PandocModel
   -- @type: boolean
   commands = true,
+  -- The command/executable
+  -- @type: string
+  command = 'pandoc',
   -- Pandoc default options
   default = {
     -- Output file name with extension

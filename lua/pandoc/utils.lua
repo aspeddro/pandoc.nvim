@@ -1,9 +1,8 @@
-local Job = require('plenary.job')
 local config = require('pandoc.config')
 
 local M = {}
 
-M.output_file = function(name, template)
+M.create_output = function(name, template)
   local template_string = template or config.get().default.output
 
   assert(type(template_string) == 'string', 'output must be a string')
@@ -29,19 +28,16 @@ M.get_argument = function(tbl, name)
 end
 
 M.add_argument = function(tbl, name)
-  if type(name) ~= 'table' then
-    return table.insert(tbl, 1, { name })
-  end
-  return table.insert(tbl, name)
+  return vim.list_extend(tbl, name)
 end
 
-local function is_valid_argument(argument)
+M.validate = function(argument)
   local lhs, rhs = unpack(argument)
-  local type_ = config.types['--' .. lhs]
+  local type_ = config.types[lhs]
   local argument_name = lhs:gsub('^%-+', '')
 
   -- Assert than argument exist
-  assert(type_, lhs .. ' is a invalid argument')
+  assert(type_, argument_name .. ' is a invalid argument')
 
   if type_ == 'flag' then
     assert(rhs == nil, argument_name .. ' must be a flag')
@@ -64,41 +60,12 @@ end
 M.parse_vim_command = function(arguments)
   return vim.tbl_map(function(argument)
     local lhs, rhs = unpack(vim.split(argument, '=', true))
-    is_valid_argument({ lhs, rhs })
     return { '--' .. lhs, rhs }
   end, vim.split(
     arguments,
     ' ',
     true
   ))
-end
-
-M.job = function(tbl)
-  local pandoc_bin = 'pandoc'
-  local cwd = vim.loop.cwd()
-
-  assert(vim.fn.executable(pandoc_bin) == 1, 'pandoc binary not found')
-
-  Job
-    :new({
-      command = pandoc_bin,
-      cwd = cwd,
-      args = vim.tbl_flatten(tbl),
-      on_stdout = function(_, data)
-        print(data)
-      end,
-      on_stderr = function(_, data)
-        print(data)
-      end,
-      on_exit = function(_, return_val)
-        if return_val == 0 then
-          print('pandoc: Done')
-        else
-          print('pandoc: Failed')
-        end
-      end,
-    })
-    :start()
 end
 
 M.on_keypress = function(key)
