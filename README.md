@@ -26,7 +26,7 @@ require'pandoc'.setup()
 
 ## Configuration (optional)
 
-Following are the default config for the `require'pandoc'.setup()`. If you want to override, just modify the option that you want then it will be merged with the default config.
+Following are the default config for the `setup()`. If you want to override, just modify the option that you want then it will be merged with the default config.
 
 ```lua
 {
