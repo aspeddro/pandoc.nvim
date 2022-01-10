@@ -1,5 +1,5 @@
-local utils = require('pandoc.utils')
-local config = require('pandoc.config')
+local utils = require("pandoc.utils")
+local config = require("pandoc.config")
 local uv = vim.loop
 
 vim.fn = setmetatable({}, {
@@ -16,17 +16,17 @@ local M = {}
 
 M.spawn = function(opts)
   local file = opts.args[1]
-  assert(vim.fn.filereadable(file) == 1, file .. ' not readable')
+  assert(vim.fn.filereadable(file) == 1, file .. " not readable")
 
   for _, argument in ipairs(vim.list_slice(opts.args, 2)) do
     utils.validate(argument)
   end
 
-  local command = config.get().command
+  local binary = config.get().binary
 
-  assert(vim.fn.executable(command) == 1, command .. ' is not executable')
+  assert(vim.fn.executable(binary) == 1, binary .. " is not executable")
 
-  local output = utils.get_argument(opts.args, '--output')
+  local output = utils.get_argument(opts.args, "--output")
 
   local spawn_opts = {
     args = vim.tbl_flatten(opts.args),
@@ -35,18 +35,18 @@ M.spawn = function(opts)
 
   local handle, pid
 
-  handle, pid = uv.spawn(command, spawn_opts, function(exit_code, signal)
+  handle, pid = uv.spawn(binary, spawn_opts, function(exit_code, signal)
     local ok = exit_code == 0 and signal == 0
     handle:close()
     if ok then
-      print(('pandoc: %s created'):format(output))
+      print(("pandoc: %s created"):format(output))
     else
-      print(('pandoc: Failed to create %s'):format(output))
+      print(("pandoc: Failed to create %s"):format(output))
     end
   end)
 
   if handle == nil then
-    error(('Failed to spawn process: cmd = %s, error = %s'):format(command, pid))
+    error(("Failed to spawn process: cmd = %s, error = %s"):format(binary, pid))
   end
 end
 

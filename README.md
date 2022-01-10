@@ -13,9 +13,7 @@ A Neovim plugin for [pandoc](https://pandoc.org)
 #### [packer.nvim](https://github.com/wbthomason/packer.nvim)
 
 ```lua
-use {
-  'aspeddro/pandoc.nvim'
-}
+use { 'aspeddro/pandoc.nvim' }
 ```
 
 ## Setup
@@ -30,10 +28,19 @@ Following are the default config for the `setup()`. If you want to override, jus
 
 ```lua
 {
-  -- Enable vim commands
-  -- :Pandoc, :PandocTOC
-  -- @type: boolean
-  commands = true,
+  commands = {
+    -- Enable vim commands
+    -- :Pandoc
+    -- @type: boolean
+    enable = true,
+    -- Extended Mode
+    -- When enabled the arguments passed by the `:Pandoc` command will be extended with the default arguments
+    -- @type: boolean
+    extended = true,
+  },
+  -- The pandoc executable
+  -- @type: string
+  binary = 'pandoc',
   -- Pandoc default options
   default = {
     -- Output file name with extension
@@ -45,35 +52,12 @@ Following are the default config for the `setup()`. If you want to override, jus
       { '--standalone' },
     },
   },
-  -- Table Of Content (WIP: unstable)
-  toc = {
-    -- Enable TOC
-    -- @type: boolean
-    enable = true,
-    -- Width of TOC
-    -- @type: number
-    width = 35,
-    -- Side of TOC
-    -- 'left', 'right', 'top' or 'bottom'
-    -- @type: string
-    side = 'right',
-    -- Keybinding to close TOC
-    -- @type: string
-    close = 'q',
-    -- Events to update TOC content
-    -- @type: table of string
-    update_events = { 'BufEnter' },
-    -- Filetypes to enable TOC
-    -- 'markdown', 'pandoc' and 'rmd' (RMarkdown)
-    -- @type: table of string
-    filetypes = { 'markdown', 'pandoc', 'rmd' }
-  },
   equation = {
     -- Border style.
     -- 'none', 'single', 'double' or 'rounded'
     -- @type: string
     border = 'single',
-  }
+  },
 }
 ```
 
@@ -86,30 +70,30 @@ local pandoc = require'pandoc'
 
 pandoc.setup{
   mapping = {
-    ['<leader>pr'] = function()
-      pandoc.render.init()
-    end,
-    ['<leader>ps'] = function()
-      -- Make your pandoc command
-      local input = vim.api.nvim_get_buf_name(0)
-      pandoc.render.build{
-        input = input,
-        args = {
-          {'--standalone'},
-          {'--toc'},
-          {'--filter', 'pandoc-crossref'},
-          {'--pdf-engine', 'xelatex'}
-        },
-        output = 'pandoc.pdf'
-      }
-    end,
-    ['<leader>ep'] = function()
-      -- requires nabla.nvim
-      pandoc.equation.show()
-    end,
-    ['<leader>pt'] = function()
-      pandoc.toc.toggle()
-    end
+    -- normal mode
+    n = {
+      ['<leader>pr'] = function()
+        pandoc.render.init()
+      end,
+      ['<leader>ps'] = function()
+        -- Make your pandoc command
+        local input = vim.api.nvim_get_buf_name(0)
+        pandoc.render.build{
+          input = input,
+          args = {
+            {'--standalone'},
+            {'--toc'},
+            {'--filter', 'pandoc-crossref'},
+            {'--pdf-engine', 'xelatex'}
+          },
+          output = 'pandoc.pdf'
+        }
+      end,
+      ['<leader>ep'] = function()
+        -- require nabla.nvim
+        pandoc.equation.show()
+      end
+    }
   }
 }
 ```
@@ -126,26 +110,25 @@ pandoc.setup{
 
 > Input file is the current buffer. Use `Tab` key for completion
 
-`pandoc.nvim` provide three commands: `:Pandoc`, `:PandocModel` and `:PandocTOC`
-
-Basic command, use default options:
+Use default options:
 
 ```
 Pandoc
 ```
 
-Enable table of contents (`--toc` flag) and `--top-level-division` argument
+When `output` is passed the path can be specified (e.g: `Pandoc output=out/example.pdf`). When path is not specified the file is created in the same directory of Neovim
 
 ```
-Pandoc toc citeproc top-level-division=section output=example_pandoc.pdf
+Pandoc output=example.pdf
 ```
 
-Toggle TOC:
+Enable table of contents (`--toc` flag) and `--top-level-division` argument.
+
 ```
-PandocTOC
+Pandoc toc citeproc top-level-division=section
 ```
 
-### Examples
+### More Examples
 
 1. HTML Fragment
   - `Pandoc output=example.html`
@@ -174,17 +157,10 @@ PandocTOC
 13. PDF with numbered sections and a custom LaTeX template:
   - `Pandoc number-sections template=template.tex pdf-engine=xelatex toc output=example13.pdf`
 
-## Lua API
-
-- `pandoc.render`
-- `pandoc.toc`
-- `pandoc.equation`
-- `pandoc.config`
-
 ## Limitations
 
-- `variable` argument is not supported
+- Currently `variable` argument is not supported
 
 ## TODO
 
-- [ ] Make TOC more stable
+- Create documentation
