@@ -2,16 +2,6 @@ local utils = require("pandoc.utils")
 local config = require("pandoc.config")
 local uv = vim.loop
 
-vim.fn = setmetatable({}, {
-  __index = function(t, key)
-    local function _fn(...)
-      return vim.api.nvim_call_function(key, { ... })
-    end
-    t[key] = _fn
-    return _fn
-  end,
-})
-
 local M = {}
 
 M.spawn = function(opts)
