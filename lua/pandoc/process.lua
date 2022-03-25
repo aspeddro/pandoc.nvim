@@ -5,6 +5,9 @@ local uv = vim.loop
 local M = {}
 
 M.spawn = function(opts)
+  local stdout = uv.new_pipe(false)
+  local stderr = uv.new_pipe(false)
+
   local file = opts.args[1]
   assert(vim.fn.filereadable(file) == 1, file .. " not readable")
 
@@ -21,23 +24,54 @@ M.spawn = function(opts)
   local spawn_opts = {
     args = vim.tbl_flatten(opts.args),
     cwd = opts.cwd or uv.cwd(),
+    stdio = { nil, stdout, stderr },
   }
 
-  local handle, pid
+  local result = {}
 
-  handle, pid = uv.spawn(binary, spawn_opts, function(exit_code, signal)
-    local ok = exit_code == 0 and signal == 0
-    handle:close()
-    if ok then
+  local function handler_message(successful)
+    local message = vim.trim(table.concat(result, ""))
+    if successful then
+      if not vim.tbl_isempty(result) then
+        print(("pandoc: %s created. %s"):format(output, message))
+        return
+      end
       print(("pandoc: %s created"):format(output))
-    else
-      print(("pandoc: Failed to create %s"):format(output))
+      return
     end
-  end)
+    print(("pandoc: Failed to create %s. %s"):format(output, message))
+  end
+
+  local handle, pid
+  handle, pid = uv.spawn(
+    binary,
+    spawn_opts,
+    vim.schedule_wrap(function(exit_code, signal)
+      local successful = exit_code == 0 and signal == 0
+      stdout:read_stop()
+      stderr:read_stop()
+      stdout:close()
+      stderr:close()
+      handle:close()
+      handler_message(successful)
+    end)
+  )
 
   if handle == nil then
     error(("Failed to spawn process: cmd = %s, error = %s"):format(binary, pid))
   end
+
+  local function on_read(err, data)
+    if err then
+      error(err)
+    end
+    if data then
+      table.insert(result, data)
+    end
+  end
+
+  stderr:read_start(on_read)
+  stdout:read_start(on_read)
 end
 
 return M
