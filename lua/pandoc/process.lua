@@ -39,7 +39,10 @@ M.spawn = function(opts)
       vim.notify(("pandoc: %s created"):format(output), vim.log.levels.INFO)
       return
     end
-    vim.notify(("pandoc: Failed to create %s. \narguments: %s.\n%s"):format(output, table.concat(spawn_opts.args, " "), message), vim.log.levels.ERROR)
+    vim.notify(
+      ("pandoc: Failed to create %s. \narguments: %s.\n%s"):format(output, table.concat(spawn_opts.args, " "), message),
+      vim.log.levels.ERROR
+    )
   end
 
   local handle, pid
