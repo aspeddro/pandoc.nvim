@@ -33,13 +33,16 @@ M.spawn = function(opts)
     local message = vim.trim(table.concat(result, ""))
     if successful then
       if not vim.tbl_isempty(result) then
-        print(("pandoc: %s created. %s"):format(output, message))
+        vim.notify(("pandoc: %s created. %s"):format(output, message), vim.log.levels.INFO)
         return
       end
-      print(("pandoc: %s created"):format(output))
+      vim.notify(("pandoc: %s created"):format(output), vim.log.levels.INFO)
       return
     end
-    print(("pandoc: Failed to create %s. %s"):format(output, message))
+    vim.notify(
+      ("pandoc: Failed to create %s. \narguments: %s.\n%s"):format(output, table.concat(spawn_opts.args, " "), message),
+      vim.log.levels.ERROR
+    )
   end
 
   local handle, pid
