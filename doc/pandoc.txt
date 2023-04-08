@@ -73,9 +73,9 @@ Commads                                                                *Commads*
 Default                                                                *Default*
 
     Fields: ~
-        {output}  (string)    Template of output with extension. Default is `%s.pdf`
-        {bin}     (string)    Path to pandoc binary. Default is `'pandoc'`
-        {args}    (string[])  Arguments to pass pandoc CLI. Default is `{ {'--standalone'} }`
+        {output}  (string)             Template of output with extension. Default is `%s.pdf`
+        {bin}     (string)             Path to pandoc binary. Default is `'pandoc'`
+        {args}    (string|string[][])  Arguments to pass pandoc CLI. Default is `{ {'--standalone'} }`
 
 
 Config                                                                  *Config*
@@ -99,7 +99,7 @@ M.file({args?})                                             *pandoc.render.file*
     Build The Current File
 
     Parameters: ~
-        {args?}  (string[])  Arguments to pass CLI
+        {args?}  (string|string[][])  Arguments to pass CLI
 
     Returns: ~
         (nil)
@@ -120,8 +120,8 @@ M.build({bin}, {args})                                     *pandoc.render.build*
     Pandoc Build
 
     Parameters: ~
-        {bin}   (string)    Path to Pandoc binary
-        {args}  (string[])  Arguments to pass CLI
+        {bin}   (string)             Path to Pandoc binary
+        {args}  (string|string[][])  Arguments to pass CLI
 
     Returns: ~
         (nil)

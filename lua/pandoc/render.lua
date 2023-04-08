@@ -6,7 +6,7 @@ local process = require("pandoc.process")
 local M = {}
 
 ---Build The Current File
----@param args? string[] Arguments to pass CLI
+---@param args? (string|string[])[] Arguments to pass CLI
 ---@return nil
 ---@usage [[
 ----- Build the current file
@@ -47,7 +47,7 @@ end
 
 ---Pandoc Build
 ---@param bin string Path to Pandoc binary
----@param args string[] Arguments to pass CLI
+---@param args (string|string[])[] Arguments to pass CLI
 ---@return nil
 ---@usage [[
 ---require('pandoc.render').build(
