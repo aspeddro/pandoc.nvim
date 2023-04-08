@@ -1,5 +1,3 @@
-local types = require("pandoc.types")
-
 ---@mod pandoc.config Configuration
 
 local M = {}
@@ -12,7 +10,7 @@ local M = {}
 ---@class Default
 ---@field output string Template of output with extension. Default is `%s.pdf`
 ---@field bin string Path to pandoc binary. Default is `'pandoc'`
----@field args string[] Arguments to pass pandoc CLI. Default is `{ {'--standalone'} }`
+---@field args (string|string[])[] Arguments to pass pandoc CLI. Default is `{ {'--standalone'} }`
 
 ---@class Config
 ---@field commands Commads
