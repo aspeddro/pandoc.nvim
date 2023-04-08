@@ -4,21 +4,21 @@ Author: Pedro Castro
 Homepage: <https://github.com/aspeddro/pandoc.nvim>
 License: MIT
 
-================================================================================
+==============================================================================
 Table of Contents                                              *pandoc.contents*
 
-Introduction······················································|pandoc.intro|
-Setup···································································|pandoc|
-Configuration····················································|pandoc.config|
-Pandoc Render····················································|pandoc.render|
-Pandoc Utils······················································|pandoc.utils|
+Introduction ···················································· |pandoc.intro|
+Setup ································································· |pandoc|
+Configuration ·················································· |pandoc.config|
+Pandoc Render ·················································· |pandoc.render|
+Pandoc Utils ···················································· |pandoc.utils|
 
-================================================================================
+==============================================================================
 Introduction                                                      *pandoc.intro*
 
 pandoc.nvim is a plugin to provide basic support for Pandoc CLI.
 
-================================================================================
+==============================================================================
 Setup                                                                   *pandoc*
 
 M.setup({opts?})                                                  *pandoc.setup*
@@ -29,37 +29,37 @@ M.setup({opts?})                                                  *pandoc.setup*
         {opts?}  (Config)
 
     Returns: ~
-        {Config}
+        (Config)
 
     See: ~
         |pandoc.config|
 
     Usage: ~
-        >
-             -- Using default configuration
-             require('pandoc').setup()
+>lua
+         -- Using default configuration
+         require('pandoc').setup()
 
-             -- Custom configuration
-             require('pandoc').setup{
-               commands = {
-                 name = 'PandocBuild'
-               },
-               default = {
-                 output = '%s_output.pdf'
-               },
-               mappings = {
-                 -- normal mode
-                 n = {
-                   ['<leader>pr'] = function ()
-                     require('pandoc.render').init()
-                   end
-                 }
-               }
+         -- Custom configuration
+         require('pandoc').setup{
+           commands = {
+             name = 'PandocBuild'
+           },
+           default = {
+             output = '%s_output.pdf'
+           },
+           mappings = {
+             -- normal mode
+             n = {
+               ['<leader>pr'] = function ()
+                 require('pandoc.render').init()
+               end
              }
-        <
+           }
+         }
+<
 
 
-================================================================================
+==============================================================================
 Configuration                                                    *pandoc.config*
 
 Commads                                                                *Commads*
@@ -89,10 +89,10 @@ M.get()                                                      *pandoc.config.get*
     Get the default config
 
     Returns: ~
-        {Config}
+        (Config)
 
 
-================================================================================
+==============================================================================
 Pandoc Render                                                    *pandoc.render*
 
 M.file({args?})                                             *pandoc.render.file*
@@ -102,18 +102,18 @@ M.file({args?})                                             *pandoc.render.file*
         {args?}  (string[])  Arguments to pass CLI
 
     Returns: ~
-        {nil}
+        (nil)
 
     Usage: ~
-        >
-            -- Build the current file
-            require('pandoc.render').init()
-            -- With custom arguments
-            require('pandoc.render').init{
-               {'--toc'},
-               {'--output', 'path/to/output.pdf'}
-            }
-        <
+>lua
+        -- Build the current file
+        require('pandoc.render').init()
+        -- With custom arguments
+        require('pandoc.render').init{
+           {'--toc'},
+           {'--output', 'path/to/output.pdf'}
+        }
+<
 
 
 M.build({bin}, {args})                                     *pandoc.render.build*
@@ -124,39 +124,39 @@ M.build({bin}, {args})                                     *pandoc.render.build*
         {args}  (string[])  Arguments to pass CLI
 
     Returns: ~
-        {nil}
+        (nil)
 
     Usage: ~
-        >
-            require('pandoc.render').build(
-               'pandoc',
-               {
-                 { 'path/to/input.md' },
-                 { '--toc' },
-                 { '--output', 'path/to/output.pdf' }
-               }
-            )
-        <
+>lua
+        require('pandoc.render').build(
+           'pandoc',
+           {
+             { 'path/to/input.md' },
+             { '--toc' },
+             { '--output', 'path/to/output.pdf' }
+           }
+        )
+<
 
 
-================================================================================
+==============================================================================
 Pandoc Utils                                                      *pandoc.utils*
 
 M.complete()                                             *pandoc.utils.complete*
     Completion Pandoc CLI arguments
 
     Returns: ~
-        {string[]}
+        (string[])
 
     Usage: ~
-        >
-            vim.api.nvim_create_user_command('PandocBuild', function()
-              require('pandoc.render').init()
-            end, {
-               nargs = "*",
-               complete = require('pandoc.utils').complete,
-            })
-        <
+>lua
+        vim.api.nvim_create_user_command('PandocBuild', function()
+          require('pandoc.render').init()
+        end, {
+           nargs = "*",
+           complete = require('pandoc.utils').complete,
+        })
+<
 
 
 vim:tw=78:ts=8:noet:ft=help:norl:
